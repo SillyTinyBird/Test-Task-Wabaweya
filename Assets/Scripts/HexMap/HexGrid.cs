@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UIElements;
+using Unity.VisualScripting;
+
 public class HexGrid : MonoBehaviour
 {
-    
 
-    
+
+
 
     [SerializeField] private int _width = 6;
     [SerializeField] private int _height = 6;
@@ -61,6 +64,7 @@ public class HexGrid : MonoBehaviour
         int index = coordinates.X + coordinates.Z * _width + coordinates.Z / 2;
         HexCell cell = cells[index];
         cell.color = touchedColor;
+        FindPath(cells[0], cell);
         hexMesh.Triangulate(cells);
     }
     void Start()
@@ -78,12 +82,95 @@ public class HexGrid : MonoBehaviour
         cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
-        cell.color = defaultColor;  
+        cell.color = defaultColor;
+        if (x > 0)
+        {
+            cell.SetNeighbor(HexDirection.W, cells[i - 1]);
+        }
+        if (z > 0)
+        {
+            if ((z & 1) == 0)
+            {
+                cell.SetNeighbor(HexDirection.SE, cells[i - _width]);
+                if (x > 0)
+                {
+                    cell.SetNeighbor(HexDirection.SW, cells[i - _width - 1]);
+                }
+            }
+            else
+            {
+                cell.SetNeighbor(HexDirection.SW, cells[i - _width]);
+                if (x < _width - 1)
+                {
+                    cell.SetNeighbor(HexDirection.SE, cells[i - _width + 1]);
+                }
+            }
+        }
         TMP_Text label = Instantiate(cellLabelPrefab);
         label.rectTransform.SetParent(gridCanvas.transform, false);
         label.rectTransform.anchoredPosition = new Vector2(position.x, position.y);
         label.text = cell.coordinates.ToStringOnSeparateLines();
+        cell.uiRect = label.rectTransform;
+    }
+    public void FindPath(HexCell fromCell, HexCell toCell)
+    {
+        StopAllCoroutines();
+        StartCoroutine(Search(fromCell, toCell));
     }
 
+    IEnumerator Search(HexCell fromCell, HexCell toCell)
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+            cells[i].Distance = int.MaxValue;
+            cells[i].DisableHighlight();
+        }
+        fromCell.EnableHighlight(Color.blue);
+        toCell.EnableHighlight(Color.red);
 
+        WaitForSeconds delay = new WaitForSeconds(1 / 60f);
+        List<HexCell> frontier = new List<HexCell>();
+        fromCell.Distance = 0;
+        frontier.Add(fromCell);
+        while (frontier.Count > 0)
+        {
+            yield return delay;
+            HexCell current = frontier[0];
+            frontier.RemoveAt(0);
+            if (current == toCell)
+            {
+                current = current.PathFrom;
+                while (current != fromCell)
+                {
+                    current.EnableHighlight(Color.white);
+                    current = current.PathFrom;
+                }
+                break;
+            }
+
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                HexCell neighbor = current.GetNeighbor(d);
+                if (neighbor == null || neighbor.Distance != int.MaxValue)
+                {
+                    continue;
+                }
+                frontier.Add(neighbor);
+
+                int distance = current.Distance + 1;
+                if (neighbor.Distance == int.MaxValue)
+                {
+                    neighbor.Distance = distance;
+                    neighbor.PathFrom = current;
+                    frontier.Add(neighbor);
+                }
+                else if (distance < neighbor.Distance)
+                {
+                    neighbor.Distance = distance;
+                    neighbor.PathFrom = current;
+                }
+                frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+            }
+        }
+    }
 }

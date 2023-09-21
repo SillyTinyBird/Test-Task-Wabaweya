@@ -154,11 +154,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _width: 6
   _height: 6
-  _distance: 1
   _cellPrefab: {fileID: 7112714109086350855, guid: b2acabc2b9a6bbe49a469bb0a1f0add2, type: 3}
   cellLabelPrefab: {fileID: 7215583743019224728, guid: e6cd6a8cbc5ea5a4090fab058eb42d1a, type: 3}
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
-  touchedColor: {r: 1, g: 0, b: 1, a: 1}
+  defaultColor: {r: 0.6698113, g: 0.6698113, b: 0.6698113, a: 1}
+  touchedColor: {r: 0.9150943, g: 0.5913581, b: 0.9150943, a: 1}
 --- !u!4 &386902861
 Transform:
   m_ObjectHideFlags: 0
