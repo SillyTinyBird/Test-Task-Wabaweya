@@ -9,8 +9,8 @@ public class HexGrid : MonoBehaviour
 {
     private static HexGrid instance;
 
-    private HexGrid()
-    { }
+    /*private HexGrid()
+    { }*/
 
     public static HexGrid getInstance()
     {
@@ -81,17 +81,17 @@ public class HexGrid : MonoBehaviour
 
     void TouchCell(Vector3 position)
     {
-        if(lastTouchedCell != null)
-        {
-            lastTouchedCell.DisableHighlight();
-        }
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
         //Debug.Log("touched at " + coordinates.ToString());
         int index = coordinates.X + coordinates.Z * _width + coordinates.Z / 2;
         HexCell cell = cells[index];
         //cell.color = touchedColor;
-        
+        if(cell == activeCell) { return; }
+        if (lastTouchedCell != null)
+        {
+            lastTouchedCell.DisableHighlight();
+        }
         lastTouchedCell = cell;
         lastTouchedCell.EnableHighlight(Color.red);
         FindPath(activeCell, cell);
@@ -156,6 +156,10 @@ public class HexGrid : MonoBehaviour
     }
     IEnumerator Search(HexCell fromCell, HexCell toCell)
     {
+        if(fromCell == toCell)//no path to seatch duh
+        {
+            yield break;
+        }
         for (int i = 0; i < cells.Length; i++)
         {
             cells[i].Distance = int.MaxValue;

@@ -25,7 +25,13 @@ public abstract class PlaybleCharacter : MonoBehaviour
     public HexCell GetOccupiedHexCell() => occupiedCell;
     public void Init() //everyone starts on the random cell
     {
-        occupiedCell = HexGrid.getInstance().GetRandomCell();
+        HexCell cellToOccupy;
+        do
+        {
+            cellToOccupy = HexGrid.getInstance().GetRandomCell();
+        }
+        while(cellToOccupy.characterOccupiedCell != null);
+        occupiedCell = cellToOccupy;
         occupiedCell.characterOccupiedCell = this;
         transform.position = occupiedCell.transform.position;
         nameLabel = Instantiate(labelPrefab);
@@ -36,7 +42,7 @@ public abstract class PlaybleCharacter : MonoBehaviour
     public void PerformAction(int abilityNumber, HexCell cell)
     {
         if (abilityNumber < 0 || abilityNumber > abilities.Count) { return; }
-        abilities[abilityNumber].Execute(cell,amountOfUnits,damageMax,damageMax);
+        abilities[abilityNumber].Execute(cell,amountOfUnits,damageMin,damageMax);
     }
     public virtual void RecieveDamage(int damage)
     {
@@ -47,19 +53,25 @@ public abstract class PlaybleCharacter : MonoBehaviour
             UpdateLabel();
             return;
         }
+        int unitsBefore = amountOfUnits;
+
         amountOfUnits = totalhealth/damage;//yeah if unit is injured its out
+
+        Debug.Log(gameObject.name + " recieved " + totalhealth + "\n" + amountOfUnits + " out of " + unitsBefore + " dead");
         UpdateLabel();
     }
-    public virtual void Move(HexCell cell)//default ability
+    public virtual bool Move(HexCell cell)//returns true if move succesfull
     {
-        if (cell == null) return;
-        if (occupiedCell.coordinates.DistanceTo(cell.coordinates) < maxDistance)
-            return;
+        if (cell == null) return false;
+        int distance = occupiedCell.coordinates.DistanceTo(cell.coordinates);
+        if (distance > maxDistance || distance == 0)
+            return false;
         occupiedCell.characterOccupiedCell = null;
         occupiedCell = cell;
         occupiedCell.characterOccupiedCell = this;
         transform.position = occupiedCell.transform.position;
         UpdateLabel();
+        return true;
     }
     private void UpdateLabel()
     {

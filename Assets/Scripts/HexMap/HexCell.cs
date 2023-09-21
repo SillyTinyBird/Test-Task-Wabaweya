@@ -13,10 +13,15 @@ public class HexCell : MonoBehaviour
     [SerializeField]
     HexCell[] neighbors;
     public PlaybleCharacter characterOccupiedCell;
+    private Image highlight;
     void UpdateDistanceLabel()
     {
         TMP_Text label = uiRect.GetComponent<TMP_Text>();
         label.text = distance.ToString();
+    }
+    private void Start()
+    {
+        highlight = uiRect.GetChild(0).GetComponent<Image>();
     }
     public int Distance
     {
@@ -33,13 +38,11 @@ public class HexCell : MonoBehaviour
     public HexCell PathFrom { get; set; }
     public void DisableHighlight()
     {
-        Image highlight = uiRect.GetChild(0).GetComponent<Image>();
         highlight.enabled = false;
     }
 
     public void EnableHighlight(Color color)
     {
-        Image highlight = uiRect.GetChild(0).GetComponent<Image>();
         highlight.color = color;
         highlight.enabled = true;
     }

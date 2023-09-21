@@ -16,7 +16,6 @@ public class BattleManager : MonoBehaviour
     private BattleState battleState;
     private List<PlaybleCharacter> turnOrder;
     private int turnOrderIndex;
-    private bool hasClicked = true; //to restrict amount of button presses or something
 
     void Start()
     {
@@ -62,60 +61,62 @@ public class BattleManager : MonoBehaviour
         // probably display some message 
         // stating it's player's turn here
         yield return new WaitForSeconds(1);
-        hasClicked = false;
     }
     IEnumerator BetaTurn()
     {
         // probably display some message 
         // stating it's player's turn here
         yield return new WaitForSeconds(1);
-        hasClicked = false;
     }
     public void OnMoveButtonPressed()
     {
-        // allow only a single action per turn
-        if (!hasClicked)
+        if (turnOrder[turnOrderIndex].GetSide() == BattleSide.APLHA)
         {
-            if (turnOrder[turnOrderIndex].GetSide() == BattleSide.APLHA)
-            {
-                StartCoroutine(MoveAlpha());
-            }
-            else
-            {
-                StartCoroutine(MoveBeta());
-            }
-            hasClicked = true;
+            StartCoroutine(MoveAlpha());
+        }
+        else
+        {
+            StartCoroutine(MoveBeta());
         }
     }
 
     public void OnAttackButtonPress()
     {
-        // allow only a single action per turn
-        if (!hasClicked)
+        if (turnOrder[turnOrderIndex].GetSide() == BattleSide.APLHA)
         {
-            if(turnOrder[turnOrderIndex].GetSide() == BattleSide.APLHA)
-            {
-                StartCoroutine(PerformAlphaAction());
-            }
-            else
-            {
-                StartCoroutine(PerformBetaAction());
-            }
-            hasClicked = true;
+            StartCoroutine(PerformAlphaAction());
+        }
+        else
+        {
+            StartCoroutine(PerformBetaAction());
         }
     }
     IEnumerator MoveAlpha()//we need separation so i could setup HUD respectively
     {
-        turnOrder[turnOrderIndex].Move(HexGrid.getInstance().GetLastTouchedCell());
+        if (!turnOrder[turnOrderIndex].Move(HexGrid.getInstance().GetLastTouchedCell()))
+        {
+            Debug.Log("Invalid length");
+            yield break;
+        }
         yield return NextTurnInOrder();
     }
     IEnumerator MoveBeta()
     {
-        turnOrder[turnOrderIndex].Move(HexGrid.getInstance().GetLastTouchedCell());
+        if (!turnOrder[turnOrderIndex].Move(HexGrid.getInstance().GetLastTouchedCell()))
+        {
+            Debug.Log("Invalid length");
+            yield break;
+        }
         yield return NextTurnInOrder();
     }
-    IEnumerator PerformBetaAction()
+    IEnumerator PerformBetaAction()//they are actually the same
     {
+        HexCell targetCell = HexGrid.getInstance().GetLastTouchedCell();
+        if (targetCell == null)
+        {
+            Debug.Log("No target selected");
+        }
+        turnOrder[turnOrderIndex].PerformAction(0, targetCell);
         if (alpha.Count <= 0 || beta.Count <= 0)
         {
             battleState = BattleState.END;
@@ -128,8 +129,12 @@ public class BattleManager : MonoBehaviour
     }
     IEnumerator PerformAlphaAction()
     {
-        turnOrder[turnOrderIndex].PerformAction(0,HexGrid.getInstance().GetLastTouchedCell());
-
+        HexCell targetCell = HexGrid.getInstance().GetLastTouchedCell();
+        if (targetCell == null)
+        {
+            Debug.Log("No target selected");
+        }
+        turnOrder[turnOrderIndex].PerformAction(0, targetCell);
         if (alpha.Count <= 0 || beta.Count <= 0)
         {
             battleState = BattleState.END;
@@ -142,7 +147,7 @@ public class BattleManager : MonoBehaviour
     }
     IEnumerator EndBattle()
     {
-        if(alpha.Count <= 0)
+        if (alpha.Count <= 0)
         {
             Debug.Log("Beta won");
         }
