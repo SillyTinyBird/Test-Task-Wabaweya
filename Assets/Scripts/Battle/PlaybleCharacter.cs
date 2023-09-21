@@ -20,9 +20,11 @@ public abstract class PlaybleCharacter : MonoBehaviour
     [SerializeField] private List<Ability> abilities;
     [SerializeField] private Canvas gridCanvas;
 
+    public List<Ability> GetAbilities() => abilities;
     public int GetInitiative() => initiative;
     public BattleSide GetSide() => side;
     public HexCell GetOccupiedHexCell() => occupiedCell;
+    public int GetAmountOfUnits() => amountOfUnits;
     public void Init() //everyone starts on the random cell
     {
         HexCell cellToOccupy;
@@ -42,22 +44,33 @@ public abstract class PlaybleCharacter : MonoBehaviour
     public void PerformAction(int abilityNumber, HexCell cell)
     {
         if (abilityNumber < 0 || abilityNumber > abilities.Count) { return; }
-        abilities[abilityNumber].Execute(cell,amountOfUnits,damageMin,damageMax);
+        int distance = occupiedCell.coordinates.DistanceTo(cell.coordinates);
+        abilities[abilityNumber].Execute(cell,amountOfUnits,damageMin,damageMax, distance);
     }
     public virtual void RecieveDamage(int damage)
     {
         int totalhealth = health * amountOfUnits;
         if (totalhealth < damage) { 
-            Debug.Log(gameObject.name + "dead");
+            Debug.Log(gameObject.name + " is dead");
+            MessageBox.PutTextInMessageBox(gameObject.name + " is dead");
             amountOfUnits = 0;
             UpdateLabel();
             return;
         }
+        totalhealth -= damage;
         int unitsBefore = amountOfUnits;
-
-        amountOfUnits = totalhealth/damage;//yeah if unit is injured its out
-
+        amountOfUnits = totalhealth/ health;//yeah if unit is injured its out
+                                            //im sorry its late and i dont wanna fix it right now
+        if (amountOfUnits <= 0)
+        {
+            Debug.Log(gameObject.name + " is dead");
+            MessageBox.PutTextInMessageBox(gameObject.name + " is dead");
+            amountOfUnits = 0;
+            UpdateLabel();
+            return;
+        }
         Debug.Log(gameObject.name + " recieved " + totalhealth + "\n" + amountOfUnits + " out of " + unitsBefore + " dead");
+        MessageBox.PutTextInMessageBox(gameObject.name + " recieved " + totalhealth + "\n" + amountOfUnits + " out of " + unitsBefore + " dead");
         UpdateLabel();
     }
     public virtual bool Move(HexCell cell)//returns true if move succesfull
@@ -65,7 +78,11 @@ public abstract class PlaybleCharacter : MonoBehaviour
         if (cell == null) return false;
         int distance = occupiedCell.coordinates.DistanceTo(cell.coordinates);
         if (distance > maxDistance || distance == 0)
+        {
+            Debug.Log("Invalid length");
+            MessageBox.PutTextInMessageBox("Invalid length");
             return false;
+        }
         occupiedCell.characterOccupiedCell = null;
         occupiedCell = cell;
         occupiedCell.characterOccupiedCell = this;

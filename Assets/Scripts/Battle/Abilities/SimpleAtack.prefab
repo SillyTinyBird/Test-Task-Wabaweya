@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3283166139367812307}
   - component: {fileID: 821032419780033068}
   m_Layer: 0
-  m_Name: umAtack
+  m_Name: SimpleAtack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

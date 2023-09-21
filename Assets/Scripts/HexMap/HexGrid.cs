@@ -88,7 +88,7 @@ public class HexGrid : MonoBehaviour
         HexCell cell = cells[index];
         //cell.color = touchedColor;
         if(cell == activeCell) { return; }
-        if (lastTouchedCell != null)
+        if (lastTouchedCell != null && lastTouchedCell != activeCell)
         {
             lastTouchedCell.DisableHighlight();
         }
