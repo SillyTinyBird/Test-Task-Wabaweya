@@ -12,6 +12,7 @@ public class HexCell : MonoBehaviour
     public Color color;
     [SerializeField]
     HexCell[] neighbors;
+    public PlaybleCharacter characterOccupiedCell;
     void UpdateDistanceLabel()
     {
         TMP_Text label = uiRect.GetComponent<TMP_Text>();

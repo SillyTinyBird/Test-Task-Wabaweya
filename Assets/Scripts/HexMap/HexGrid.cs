@@ -4,12 +4,20 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
-
+[DefaultExecutionOrder(-1)]
 public class HexGrid : MonoBehaviour
 {
+    private static HexGrid instance;
 
+    private HexGrid()
+    { }
 
-
+    public static HexGrid getInstance()
+    {
+        if (instance == null)
+            instance = new HexGrid();
+        return instance;
+    }
 
     [SerializeField] private int _width = 6;
     [SerializeField] private int _height = 6;
@@ -18,10 +26,11 @@ public class HexGrid : MonoBehaviour
     [SerializeField] private TMP_Text cellLabelPrefab;
     [SerializeField] private Color defaultColor = Color.white;
     [SerializeField] private Color touchedColor = Color.magenta;
-    private HexCell[] cells;
+    private static HexCell[] cells;
     private Canvas gridCanvas;
     private HexMesh hexMesh;
-
+    private static HexCell lastTouchedCell;
+    private static HexCell activeCell;
 
     void Awake()
     {
@@ -37,6 +46,7 @@ public class HexGrid : MonoBehaviour
                 CreateCell(x, z, i++);
             }
         }
+        activeCell = cells[0];//just so we dont have null ptr error
     }
     void Update()
     {
@@ -46,6 +56,19 @@ public class HexGrid : MonoBehaviour
         }
     }
 
+    public HexCell GetRandomCell()
+    {
+        int index = Random.Range(0, cells.Length);
+        return cells[index];
+    }
+    public void SetActiveCell(HexCell cell)
+    {
+        ClearHighlights();
+        activeCell.DisableHighlight();
+        activeCell = cell;
+        activeCell.EnableHighlight(Color.blue);
+    }
+    public HexCell GetLastTouchedCell() => lastTouchedCell;
     void HandleInput()
     {
         Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -58,14 +81,21 @@ public class HexGrid : MonoBehaviour
 
     void TouchCell(Vector3 position)
     {
+        if(lastTouchedCell != null)
+        {
+            lastTouchedCell.DisableHighlight();
+        }
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
-        Debug.Log("touched at " + coordinates.ToString());
+        //Debug.Log("touched at " + coordinates.ToString());
         int index = coordinates.X + coordinates.Z * _width + coordinates.Z / 2;
         HexCell cell = cells[index];
-        cell.color = touchedColor;
-        FindPath(cells[0], cell);
-        hexMesh.Triangulate(cells);
+        //cell.color = touchedColor;
+        
+        lastTouchedCell = cell;
+        lastTouchedCell.EnableHighlight(Color.red);
+        FindPath(activeCell, cell);
+        //hexMesh.Triangulate(cells);
     }
     void Start()
     {
@@ -117,16 +147,22 @@ public class HexGrid : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(Search(fromCell, toCell));
     }
-
+    private void ClearHighlights()
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+            cells[i].DisableHighlight();
+        }
+    }
     IEnumerator Search(HexCell fromCell, HexCell toCell)
     {
         for (int i = 0; i < cells.Length; i++)
         {
             cells[i].Distance = int.MaxValue;
+            if (cells[i] == fromCell || cells[i] == toCell)
+                continue;
             cells[i].DisableHighlight();
         }
-        fromCell.EnableHighlight(Color.blue);
-        toCell.EnableHighlight(Color.red);
 
         WaitForSeconds delay = new WaitForSeconds(1 / 60f);
         List<HexCell> frontier = new List<HexCell>();
@@ -155,8 +191,11 @@ public class HexGrid : MonoBehaviour
                 {
                     continue;
                 }
+                if (neighbor.characterOccupiedCell != null)
+                {
+                    continue;
+                }
                 frontier.Add(neighbor);
-
                 int distance = current.Distance + 1;
                 if (neighbor.Distance == int.MaxValue)
                 {

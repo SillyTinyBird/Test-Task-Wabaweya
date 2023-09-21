@@ -1,0 +1,1 @@
+public enum BattleSide { APLHA, BETA }
