@@ -175,8 +175,9 @@ MonoBehaviour:
   initiative: 4
   side: 0
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 0
+    z: 4
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &134686710
 GameObject:
@@ -814,9 +815,9 @@ MonoBehaviour:
   initiative: 6
   side: 0
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 4428181452643986702, guid: e5e77393d6c349d43a347b3cf959c629, type: 3}
-  - {fileID: 4077344305847499706, guid: 0d857f8ba0cd72c41a85f0af19871602, type: 3}
+  startingCoordinates:
+    x: 0
+    z: 2
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &657685911
 GameObject:
@@ -1079,9 +1080,9 @@ MonoBehaviour:
   initiative: 6
   side: 1
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 4428181452643986702, guid: e5e77393d6c349d43a347b3cf959c629, type: 3}
-  - {fileID: 4077344305847499706, guid: 0d857f8ba0cd72c41a85f0af19871602, type: 3}
+  startingCoordinates:
+    x: 7
+    z: 0
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &825388811
 GameObject:
@@ -1284,8 +1285,9 @@ MonoBehaviour:
   initiative: 4
   side: 0
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 0
+    z: 0
   gridCanvas: {fileID: 1241640221}
 --- !u!212 &920330324
 SpriteRenderer:
@@ -1391,8 +1393,9 @@ MonoBehaviour:
   initiative: 4
   side: 0
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 0
+    z: 3
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &1032799439
 GameObject:
@@ -1639,8 +1642,9 @@ MonoBehaviour:
   initiative: 4
   side: 1
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 7
+    z: 2
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &1083705423
 GameObject:
@@ -2152,8 +2156,9 @@ MonoBehaviour:
   initiative: 4
   side: 0
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 0
+    z: 2
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &1352316473
 GameObject:
@@ -2341,8 +2346,9 @@ MonoBehaviour:
   initiative: 4
   side: 1
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 7
+    z: 4
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &1470246283
 GameObject:
@@ -2612,8 +2618,9 @@ MonoBehaviour:
   initiative: 4
   side: 1
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 7
+    z: 3
   gridCanvas: {fileID: 1241640221}
 --- !u!1 &1963065103
 GameObject:
@@ -3357,8 +3364,9 @@ MonoBehaviour:
   initiative: 1
   side: 1
   labelPrefab: {fileID: 7215583743019224728, guid: 0f2a1ff8c1f0b5741b9748233e18e48f, type: 3}
-  abilities:
-  - {fileID: 821032419780033068, guid: 28893c794310b9b4b8320f61f119b666, type: 3}
+  startingCoordinates:
+    x: 0
+    z: 0
   gridCanvas: {fileID: 1241640221}
 --- !u!212 &2083122568
 SpriteRenderer:

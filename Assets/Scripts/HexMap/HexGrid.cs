@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
+using System.Linq;
+
 [DefaultExecutionOrder(-1)]
 public class HexGrid : MonoBehaviour
 {
@@ -34,6 +36,14 @@ public class HexGrid : MonoBehaviour
 
     void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+        }
         gridCanvas = GetComponentInChildren<Canvas>();
         hexMesh = GetComponentInChildren<HexMesh>();
         gridCanvas = GetComponentInChildren<Canvas>();
@@ -48,6 +58,8 @@ public class HexGrid : MonoBehaviour
         }
         activeCell = cells[0];//just so we dont have null ptr error
     }
+
+
     void Update()
     {
         if (Input.GetMouseButton(0))
@@ -56,6 +68,10 @@ public class HexGrid : MonoBehaviour
         }
     }
 
+    public HexCell GetHexCellByCoordinates(HexCoordinates coords)
+    {
+        return cells.SingleOrDefault(cell => cell.coordinates == coords);
+    }
     public HexCell GetRandomCell()
     {
         int index = Random.Range(0, cells.Length);

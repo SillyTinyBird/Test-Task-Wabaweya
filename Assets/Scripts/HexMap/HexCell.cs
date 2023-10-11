@@ -11,7 +11,7 @@ public class HexCell : MonoBehaviour
     public HexCoordinates coordinates;
     public Color color;
     [SerializeField]
-    HexCell[] neighbors;
+    public HexCell[] neighbors;
     public PlaybleCharacter characterOccupiedCell;
     private Image highlight;
     void UpdateDistanceLabel()

@@ -83,4 +83,14 @@ public struct HexCoordinates
             (Y < other.Y ? other.Y - Y : Y - other.Y) +
             (z < other.z ? other.z - z : z - other.z)) / 2;
     }
+    public static bool operator == (HexCoordinates a, HexCoordinates b)
+    {
+        if (a.x == b.x && a.z == b.z) return true;
+        return false;
+    }
+    public static bool operator != (HexCoordinates a, HexCoordinates b)
+    {
+        if (a.x == b.x && a.z == b.z) return false;
+        return true;
+    }
 }

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,6 +11,7 @@ public abstract class PlaybleCharacter : MonoBehaviour
 {
     [SerializeField] private int amountOfUnits;
     [SerializeField] private int health;
+    private int injuredUnitHealth;
     [SerializeField] private int maxDistance;
     [SerializeField] private int damageMin;
     [SerializeField] private int damageMax;
@@ -16,36 +19,69 @@ public abstract class PlaybleCharacter : MonoBehaviour
     [SerializeField] private BattleSide side;
     private TMP_Text nameLabel;
     [SerializeField] private TMP_Text labelPrefab;
+    [SerializeField] private HexCoordinates startingCoordinates;
     private HexCell occupiedCell;
-    [SerializeField] private List<Ability> abilities;
+    public virtual List<Ability> Abilities { get; private set; }
+    //[SerializeField] private List<Ability> abilities;
     [SerializeField] private Canvas gridCanvas;
 
-    public List<Ability> GetAbilities() => abilities;
+    public List<Ability> GetAbilities() => Abilities;
     public int GetInitiative() => initiative;
     public BattleSide GetSide() => side;
     public HexCell GetOccupiedHexCell() => occupiedCell;
     public int GetAmountOfUnits() => amountOfUnits;
     public void Init() //everyone starts on the random cell
     {
-        HexCell cellToOccupy;
-        do
-        {
-            cellToOccupy = HexGrid.getInstance().GetRandomCell();
-        }
-        while(cellToOccupy.characterOccupiedCell != null);
-        occupiedCell = cellToOccupy;
-        occupiedCell.characterOccupiedCell = this;
-        transform.position = occupiedCell.transform.position;
+        SearchForPlaceForUnit(startingCoordinates);
         nameLabel = Instantiate(labelPrefab);
         nameLabel.rectTransform.SetParent(gridCanvas.transform, false);
         nameLabel.color = side == BattleSide.APLHA ? Color.green : Color.red;
         UpdateLabel();
     }
+    private void SearchForPlaceForUnit(HexCoordinates cords)
+    {
+        HexCell cellToOccupy = HexGrid.getInstance().GetHexCellByCoordinates(cords);
+        if(cellToOccupy == null)
+            PlaceUnitRandom();
+        if (cellToOccupy.characterOccupiedCell == null){//means we can place characcter in this cell
+            PlaceUnit(cellToOccupy);
+            return;
+        }
+        HexCell cellCandidate;
+        for(int i = 0; i < cellToOccupy.neighbors.Length; i++)
+        {
+            cellCandidate = cellToOccupy.neighbors[i];
+            if (cellCandidate.characterOccupiedCell == null)
+            {
+                PlaceUnit(cellCandidate);
+                return;
+            }
+        }
+        //if we are still here than all hope is lost and we go for random neighbor
+        PlaceUnitRandom();
+
+    }
+    private void PlaceUnitRandom()
+    {
+        HexCell cellToOccupy;
+        do
+        {
+            cellToOccupy = HexGrid.getInstance().GetRandomCell();
+        }
+        while (cellToOccupy.characterOccupiedCell != null);
+        PlaceUnit(cellToOccupy);
+    }
+    private void PlaceUnit(HexCell cellToOccupy)
+    {
+        occupiedCell = cellToOccupy;
+        occupiedCell.characterOccupiedCell = this;
+        transform.position = occupiedCell.transform.position;
+    }
     public void PerformAction(int abilityNumber, HexCell cell)
     {
-        if (abilityNumber < 0 || abilityNumber > abilities.Count) { return; }
+        if (abilityNumber < 0 || abilityNumber > Abilities.Count) { return; }
         int distance = occupiedCell.coordinates.DistanceTo(cell.coordinates);
-        abilities[abilityNumber].Execute(cell,amountOfUnits,damageMin,damageMax, distance);
+        Abilities[abilityNumber].Execute(cell,amountOfUnits,damageMin,damageMax, distance);
     }
     public virtual void RecieveDamage(int damage)
     {

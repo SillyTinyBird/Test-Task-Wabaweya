@@ -75,8 +75,9 @@ public class BattleManager : MonoBehaviour
         }
         string abilitieList = "";
         int id = 0;
-        turnOrder[turnOrderIndex].GetAbilities().ForEach(x => {
-            abilitieList += id + ": " + x.name + "\n"; 
+        //List<Ability> abilitiesFromTHing = turnOrder[turnOrderIndex].Abilities;
+        turnOrder[turnOrderIndex].Abilities.ForEach(x => {
+            abilitieList += id + ": " + x.GetType().Name + "\n"; 
             id++; 
         });
         abilities.text = abilitieList;
@@ -90,7 +91,7 @@ public class BattleManager : MonoBehaviour
         turnIndicator.text = "Alpha turn";
         // probably display some message 
         // stating it's player's turn here
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0);
     }
     IEnumerator BetaTurn()
     {
@@ -98,7 +99,7 @@ public class BattleManager : MonoBehaviour
         turnIndicator.text = "Beta turn";
         // probably display some message 
         // stating it's player's turn here
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0);
     }
     public void OnMoveButtonPressed()
     {
